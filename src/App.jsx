@@ -244,8 +244,16 @@ export default function App() {
       alert('Please draw a signature first.')
       return
     }
-    const dataUrl = sigCanvasRef.current.getTrimmedCanvas().toDataURL('image/png')
-    setSignatureData(dataUrl)
+    // Composite onto a white background so jsPDF renders it correctly
+    const trimmed = sigCanvasRef.current.getTrimmedCanvas()
+    const flat = document.createElement('canvas')
+    flat.width = trimmed.width
+    flat.height = trimmed.height
+    const ctx = flat.getContext('2d')
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, flat.width, flat.height)
+    ctx.drawImage(trimmed, 0, 0)
+    setSignatureData(flat.toDataURL('image/png'))
     setSignatureSaved(true)
   }
 
